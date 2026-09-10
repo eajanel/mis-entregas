@@ -1,0 +1,14 @@
+entrega/*.csv
+entrega/no-contactar.txt
+entrega/entregas.md
+amarilla.csv
+vacantes.csv
+*.vcf
+contactos.csv
+red-cercana.csv
+donde-gasto.csv
+cruce.csv
+clientes.csv
+bitacora.csv
+bajas.csv
+.DS_Store

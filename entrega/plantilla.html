@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{NOMBRE}} — muestra</title>
+<meta property="og:title" content="{{NOMBRE}} — muestra">
+<meta property="og:description" content="Página de muestra hecha para {{NOMBRE}}, {{CIUDAD}}.">
+<style>
+  :root{
+    --tinta:#14110f;
+    --papel:#fbf8f4;
+    --acento:#0d9488;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:var(--papel); color:var(--tinta);
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .caja{max-width:720px;margin:0 auto;padding:0 24px}
+  header{padding:72px 0 56px;text-align:center}
+  header .giro{
+    text-transform:uppercase;letter-spacing:.18em;font-size:13px;
+    color:var(--acento);font-weight:700;margin-bottom:14px;
+  }
+  header h1{font-size:clamp(34px,7vw,54px);line-height:1.1;letter-spacing:-.02em}
+  header .donde{margin-top:14px;font-size:17px;opacity:.7}
+  .boton{
+    display:inline-block;margin-top:32px;padding:17px 34px;border-radius:999px;
+    background:var(--acento);color:#fff;text-decoration:none;
+    font-weight:700;font-size:17px;
+  }
+  .servicios{display:grid;gap:14px;padding:8px 0 56px}
+  @media(min-width:640px){.servicios{grid-template-columns:repeat(3,1fr)}}
+  .servicio{
+    background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:14px;
+    padding:26px 22px;text-align:center;font-weight:600;font-size:17px;
+  }
+  .datos{
+    background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:14px;
+    padding:30px;margin-bottom:56px;
+  }
+  .datos h2{font-size:14px;text-transform:uppercase;letter-spacing:.14em;
+    color:var(--acento);margin-bottom:18px}
+  .datos p{margin-bottom:10px}
+  .datos a{color:var(--tinta)}
+  .cortesia{
+    border-top:1px solid rgba(0,0,0,.1);padding:26px 0 46px;
+    font-size:13.5px;line-height:1.65;opacity:.72;
+  }
+</style>
+</head>
+<body>
+
+  <header class="caja">
+    <p class="giro">{{GIRO}}</p>
+    <h1>{{NOMBRE}}</h1>
+    <p class="donde">{{CIUDAD}}</p>
+    {{BOTON}}
+  </header>
+
+  <div class="caja">
+    <div class="servicios">
+      <div class="servicio">{{SERVICIO1}}</div>
+      <div class="servicio">{{SERVICIO2}}</div>
+      <div class="servicio">{{SERVICIO3}}</div>
+    </div>
+
+    <div class="datos">
+      <h2>Dónde y cómo</h2>
+      <p><strong>Dirección:</strong> {{DIRECCION}}</p>
+      <p><strong>Teléfono:</strong> <a href="tel:{{TEL_LIMPIO}}">{{TELEFONO}}</a></p>
+      <p><a href="{{MAPA}}" target="_blank" rel="noopener">Ver cómo llegar en el mapa →</a></p>
+    </div>
+
+    <footer class="cortesia">
+      <p><strong>Ésta es una muestra de cortesía.</strong> La hice yo, {{AUTOR}}, como ejemplo
+      de cómo se vería {{NOMBRE}} en internet. <strong>No es el sitio oficial de {{NOMBRE}}</strong>
+      y no fue hecha ni autorizada por ellos. Si al negocio le gusta, se la paso sin costo;
+      si no la quiere, la doy de baja. Contacto: {{AUTOR_CONTACTO}}</p>
+    </footer>
+  </div>
+
+</body>
+</html>

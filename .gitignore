@@ -12,3 +12,6 @@ clientes.csv
 bitacora.csv
 bajas.csv
 .DS_Store
+guardia/.env
+guardia/*.log
+node_modules/

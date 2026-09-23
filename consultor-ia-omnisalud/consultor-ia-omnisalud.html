@@ -1,0 +1,570 @@
+<title>Consultor Omnisalud</title>
+<style>
+  :root{
+    --bg:#F4F6EF;
+    --surface:#FFFFFF;
+    --surface-2:#EDF1E6;
+    --text:#23261F;
+    --muted:#6E7364;
+    --primary:#1F5C4E;
+    --primary-strong:#123B31;
+    --on-primary:#FDFBF6;
+    --accent:#D97D3D;
+    --border:#DEE3D3;
+    --bubble-user:#1F5C4E;
+    --bubble-user-text:#FDFBF6;
+    --bubble-bot:#FFFFFF;
+    --danger:#B3492F;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#10160F;
+      --surface:#182018;
+      --surface-2:#1E2A1F;
+      --text:#ECEFE5;
+      --muted:#9AA491;
+      --primary:#6FBFA3;
+      --primary-strong:#8FD4BB;
+      --on-primary:#0E1A16;
+      --accent:#F0A050;
+      --border:#2B362B;
+      --bubble-user:#2C4A40;
+      --bubble-user-text:#ECEFE5;
+      --bubble-bot:#182018;
+      --danger:#F0937C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#10160F;
+    --surface:#182018;
+    --surface-2:#1E2A1F;
+    --text:#ECEFE5;
+    --muted:#9AA491;
+    --primary:#6FBFA3;
+    --primary-strong:#8FD4BB;
+    --on-primary:#0E1A16;
+    --accent:#F0A050;
+    --border:#2B362B;
+    --bubble-user:#2C4A40;
+    --bubble-user-text:#ECEFE5;
+    --bubble-bot:#182018;
+    --danger:#F0937C;
+    color-scheme: dark;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Work Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  .brand{ font-family:"Fraunces", Georgia, "Times New Roman", serif; }
+
+  header.appbar{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 16px;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index:5;
+  }
+  .mark{
+    width:38px; height:38px; border-radius:50%;
+    background:linear-gradient(155deg, var(--primary), var(--primary-strong));
+    display:flex; align-items:center; justify-content:center;
+    flex:0 0 auto;
+  }
+  .mark svg{ width:20px; height:20px; }
+  .titles{ min-width:0; }
+  .titles h1{
+    margin:0; font-size:16px; line-height:1.2; font-weight:600;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .titles p{
+    margin:0; font-size:12px; color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .status{
+    margin-left:auto; flex:0 0 auto; display:flex; align-items:center; gap:6px;
+    font-size:11px; color:var(--muted);
+  }
+  .dot{ width:7px; height:7px; border-radius:50%; background:#3FA66B; flex:0 0 auto; }
+
+  .disclaimer{
+    flex:0 0 auto;
+    background:var(--surface-2);
+    color:var(--muted);
+    font-size:11.5px;
+    line-height:1.4;
+    padding:7px 16px;
+    text-align:center;
+    border-bottom:1px solid var(--border);
+  }
+  .disclaimer strong{ color:var(--text); }
+
+  main.thread{
+    flex:1 1 auto;
+    overflow-y:auto;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .empty{
+    margin:auto 0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:14px;
+    padding:24px 8px;
+  }
+  .empty .mark{ width:56px; height:56px; }
+  .empty .mark svg{ width:30px; height:30px; }
+  .empty h2{ margin:0; font-size:19px; font-weight:600; }
+  .empty p{ margin:0; max-width:38ch; color:var(--muted); font-size:14px; line-height:1.5; }
+
+  .chips{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:480px;
+  }
+  .chip{
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text);
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:13px;
+    cursor:pointer;
+    font-family:inherit;
+    text-align:left;
+  }
+  .chip:hover{ border-color:var(--primary); }
+  .chip:focus-visible, .send:focus-visible, .stop:focus-visible, textarea:focus-visible{
+    outline:2px solid var(--primary); outline-offset:2px;
+  }
+
+  .row{ display:flex; max-width:100%; }
+  .row.user{ justify-content:flex-end; }
+  .row.bot{ justify-content:flex-start; }
+  .bubble{
+    max-width:min(72ch, 84%);
+    padding:10px 14px;
+    border-radius:16px;
+    font-size:14.5px;
+    line-height:1.5;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+  }
+  .row.user .bubble{
+    background:var(--bubble-user);
+    color:var(--bubble-user-text);
+    border-bottom-right-radius:4px;
+  }
+  .row.bot .bubble{
+    background:var(--bubble-bot);
+    border:1px solid var(--border);
+    border-bottom-left-radius:4px;
+  }
+  .row.system .bubble{
+    background:transparent;
+    border:1px dashed var(--danger);
+    color:var(--danger);
+    font-size:13px;
+    max-width:90%;
+    margin:0 auto;
+    text-align:center;
+  }
+  .thinking{ display:inline-flex; gap:4px; align-items:center; padding:2px 0; }
+  .thinking span{
+    width:6px; height:6px; border-radius:50%; background:var(--muted);
+    animation:bounce 1.1s infinite ease-in-out;
+  }
+  .thinking span:nth-child(2){ animation-delay:.15s; }
+  .thinking span:nth-child(3){ animation-delay:.3s; }
+  @keyframes bounce{ 0%,80%,100%{ transform:translateY(0); opacity:.5; } 40%{ transform:translateY(-4px); opacity:1; } }
+  @media (prefers-reduced-motion: reduce){
+    .thinking span{ animation:none; opacity:.8; }
+  }
+
+  footer.composer{
+    flex:0 0 auto;
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+    padding:10px 12px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    background:var(--surface);
+    border-top:1px solid var(--border);
+  }
+  textarea{
+    flex:1 1 auto;
+    resize:none;
+    max-height:120px;
+    min-height:40px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    background:var(--bg);
+    color:var(--text);
+    padding:10px 14px;
+    font:inherit;
+    font-size:14.5px;
+    line-height:1.4;
+  }
+  button.send, button.stop{
+    flex:0 0 auto;
+    border:none;
+    border-radius:50%;
+    width:40px; height:40px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    color:var(--on-primary);
+    background:var(--primary);
+  }
+  button.stop{ background:var(--danger); color:#fff; }
+  button.send:disabled{ opacity:.45; cursor:default; }
+  button.send svg, button.stop svg{ width:18px; height:18px; }
+
+  .hint{
+    text-align:center; font-size:11px; color:var(--muted);
+    padding:2px 0 8px;
+  }
+
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--border); border-radius:8px; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap">
+
+<header class="appbar">
+  <div class="mark" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--on-primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 21c-4-2.5-7-6-7-10a7 7 0 0 1 7-7 7 7 0 0 1 7 7c0 4-3 7.5-7 10Z"/>
+      <path d="M12 14v-3"/>
+      <path d="M12 11c0-2.5 1.5-3.5 3-4"/>
+    </svg>
+  </div>
+  <div class="titles">
+    <h1 class="brand">Consultor IA Omnisalud™</h1>
+    <p>Proyecto Renacer Omnisalud™</p>
+  </div>
+  <div class="status"><span class="dot"></span>En línea</div>
+</header>
+
+<div class="disclaimer">
+  <strong>Orientación educativa, no consejo médico.</strong> Ante síntomas de emergencia, contacta a tu médico o servicios de emergencia.
+</div>
+
+<main class="thread" id="thread">
+  <div class="empty" id="emptyState">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--on-primary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21c-4-2.5-7-6-7-10a7 7 0 0 1 7-7 7 7 0 0 1 7 7c0 4-3 7.5-7 10Z"/>
+        <path d="M12 14v-3"/>
+        <path d="M12 11c0-2.5 1.5-3.5 3-4"/>
+      </svg>
+    </div>
+    <h2>Soy tu Consultor IA Omnisalud™</h2>
+    <p>Pregúntame sobre tu fase del programa, tus hábitos, tu semana o qué módulo revisar. Estoy aquí 24/7 para acompañarte.</p>
+    <div class="chips" id="starterChips"></div>
+  </div>
+</main>
+
+<div class="hint" id="hint" hidden>Enter para enviar · Shift+Enter para salto de línea</div>
+<footer class="composer" id="composer" hidden>
+  <textarea id="input" rows="1" placeholder="Escribe tu pregunta…" aria-label="Escribe tu pregunta para el Consultor IA Omnisalud"></textarea>
+  <button class="send" id="sendBtn" type="button" aria-label="Enviar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 5l7 7-7 7"/></svg>
+  </button>
+</footer>
+
+<script src="recetas-data.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var RULES = "Eres el Consultor IA Omnisalud, el asistente oficial dentro de Proyecto Renacer Omnisalud, un programa de 90 dias para reconstruir habitos de salud metabolica (Sistema O.M.N.I. -- Optimizacion Metabolica Natural Integral). Hablas espanol de Mexico, en tono calido, cercano, directo y motivador, como un mentor que ya vivio la transformacion, no como doctor ni vendedor. Representas la identidad RENACER: disciplina, acompanamiento, constancia, esperanza; puedes recordarle al alumno 'Eres RENACER' para reforzar pertenencia. Tu trabajo es dar orientacion sobre el programa y sus habitos, nunca reemplazar a un profesional de salud.\n\n" +
+"QUE PUEDES HACER: explicar en que fase del protocolo de 90 dias esta el alumno y que le toca esa semana; ayudarlo a decidir que modulo revisar segun su duda; dar principios generales de alimentacion, movimiento, descanso y manejo del estres alineados al protocolo; buscar recetas oficiales del Recetario Premium Renacer con la herramienta buscar_recetas (por categoria, fase o ingrediente); ayudar a organizar su semana, calendario de habitos y bitacora; responder objeciones y bajones de motivacion con empatia usando el manifiesto; aclarar que incluye su programa.\n\n" +
+"LINEAS DURAS, NUNCA LAS CRUCES: (1) Nunca diagnostiques ni sustituyas a un medico -- no interpretes laboratorios, no ajustes dosis de medicamento (insulina, antihipertensivos), nunca sugieras dejar o cambiar un tratamiento medico. (2) Nunca prometas ni garantices resultados medicos ('vas a bajar X kg', 'se te va a quitar la diabetes') -- habla de habitos, proceso y acompanamiento. (3) Nunca inventes una receta: cuando el alumno pida una receta o idea de comida concreta, usa la herramienta buscar_recetas para consultarla en las 180 recetas oficiales del Recetario Premium Renacer. Si buscar_recetas no encuentra nada relevante (o la herramienta no esta disponible en esta vista), apoyate en la seccion RECETARIO BASE de abajo -- son principios generales de respaldo, no las recetas oficiales -- y dilo con honestidad. No fabriques cifras, testimonios, fechas de inicio de grupo ni cupos disponibles. (4) Senales de alarma (dolor de pecho, desmayo, dificultad para respirar, glucosa muy alta o baja con sintomas, presion arterial extrema, ideacion suicida, cualquier emergencia): responde con empatia, dile con claridad que busque atencion medica o de emergencia de inmediato, y no intentes resolverlo tu. (5) Preguntas de reembolsos, cupos, fechas de inicio de grupo, o casos medicos complejos: dirige al alumno a contactar directamente a soporte del programa.\n\n" +
+"COMO RESPONDER: respuestas cortas y accionables primero, profundiza solo si lo piden. Si no tienes el dato, dilo, no lo inventes. Cuando des orientacion de habitos, puedes recordar (sin ser repetitivo en cada mensaje) que esto es guia educativa y de acompanamiento, no consejo medico.\n\n" +
+"IDENTIDAD DE MARCA: Marca Metodo Omnisalud, oferta Proyecto Renacer Omnisalud. Mecanismo unico: Sistema O.M.N.I. (Optimizacion Metabolica Natural Integral). Acronimo del programa RENACER: Reconstruccion, Energia, Nutricion, Accion, Constancia, Equilibrio, Renovacion. Eslogan: 'La salud no se improvisa. Se construye.' Duracion 90 dias, 10 modulos progresivos con acompanamiento semanal. Identidad del alumno: 'Soy RENACER'. Historia de marca: nace de la experiencia personal del fundador con diabetes, presion arterial alta y sobrepeso, que desarrollo un sistema integral de habitos y lo comparte con otros. Enemigo comun: la normalizacion de habitos que deterioran la salud y la creencia de que el cambio no es posible. Promesa oficial: 'En 90 dias aprenderas un sistema integral para mejorar tu salud metabolica, desarrollar habitos sostenibles y sentirte con mas energia y bienestar, con el acompanamiento necesario para mantener el proceso.' Nunca prometas un resultado medico especifico.\n\n" +
+"LOS 4 PILARES: 1) Alimentacion e intestino -- cero azucar y comida chatarra, pre/pro/postbioticos, moderacion de frutas, ayuno intermitente gradual. 2) Movimiento -- caminata y cardio ligero al inicio, luego HIIT y pesas, luego correr/resistencia. 3) Mente -- reprogramacion mental nocturna desde el dia 1, manejo del estres, visualizacion. 4) Habitos de vida -- organizacion diaria, constancia, seguimiento semanal.\n\n" +
+"PROTOCOLO DE 90 DIAS EN 3 FASES:\n" +
+"Fase 1, semanas 1 a 4 (Ruptura y desintoxicacion): cero azucar y comida chatarra sin gradualidad; iniciar pre/pro/postbioticos; ayuno intermitente gradual de 12h hacia 14-16h; reprogramacion mental nocturna diaria desde el dia 1; movimiento de caminata y cardio ligero, sin saturar a quien parte de sobrepeso o hipertension.\n" +
+"Fase 2, semanas 5 a 8 (Construccion metabolica): ayuno intermitente en ventana objetivo (ej. 16:8 segun tolerancia); se agrega HIIT y pesas; frutas con protocolo de moderacion (cantidad y momento del dia); continua la reprogramacion mental.\n" +
+"Fase 3, semanas 9 a 12 (Consolidacion): se agrega correr o resistencia; alimentacion, ejercicio y mente ya funcionan como habito; medicion de resultados (presion, glucosa, peso, animo) siempre con seguimiento medico del alumno, nunca del asistente; plan de mantenimiento post-programa.\n\n" +
+"LOS 10 MODULOS: 1 RENACER 'El dia que recuperas el control' (mentalidad, evaluacion inicial, compromiso). 2 Reset Metabolico 'Preparando tu cuerpo para el cambio' (principios de equilibrio metabolico). 3 Nutricion Inteligente 'Aprender a alimentarse sin complicaciones' (plan de alimentacion practico). 4 Activacion Total 'Mover el cuerpo correctamente' (actividad fisica progresiva). 5 Mente Renacer 'La transformacion comienza en la mente' (disciplina, gestion emocional). 6 Energia Vital 'Dormir mejor. Vivir mejor.' (descanso y recuperacion). 7 Protocolo Omnisalud 'Como integrar todos los habitos' (integracion de alimentacion, ejercicio y descanso). 8 Maestria del Habito 'Convertir el cambio en un estilo de vida' (evitar recaidas, consolidar constancia). 9 Vida Nueva 'Mantener el progreso' (plan de continuidad post-programa). 10 Legado Renacer 'Inspirar con el ejemplo' (cierre, comunidad, mentoria grupal final). El contenido detallado en video de cada modulo aun esta en construccion -- si piden algo muy especifico que no esta aqui, dilo con honestidad y remite al modulo correspondiente dentro de la plataforma.\n\n" +
+"OBJECIONES FRECUENTES: 'Funcionara para mi' -> habla de proceso y acompanamiento, nunca de garantia, el programa se adapta por fases. 'Ya he intentado muchas cosas' -> valida su frustracion, diferencia por el acompanamiento estructurado de 90 dias. 'No tengo tiempo' -> menciona Cocina Express, calendario diario, protocolos que integran todo. 'Es caro' -> reencuadra valor percibido vs precio de lanzamiento, nunca inventes cifras, remite a soporte si preguntan el precio exacto. 'No tengo disciplina' o 'soy muy mayor' o 'mi enfermedad lleva anos' -> responde con empatia y el manifiesto RENACER, no es fuerza de voluntad sino sistema y compania. 'No se usar tecnologia' -> ofrece explicar paso a paso. 'Y si no veo cambios' -> menciona que existe una garantia de evaluacion en los primeros dias, remite a soporte para las condiciones exactas, no inventes numero de dias ni condiciones.\n\n" +
+"MANIFIESTO RENACER (citalo o parafrasealo para motivar): No nacimos para conformarnos con sentirnos limitados por malos habitos. No aceptamos que perder energia sea parte inevitable de la edad. Creemos que cada persona puede aprender a cuidar mejor de su cuerpo. No buscamos soluciones rapidas, buscamos resultados sostenibles. No seguimos modas, seguimos principios. No prometemos milagros, promovemos disciplina, conocimiento y acompanamiento. Hoy comienza tu Renacer.\n\n" +
+"PERFIL DEL ALUMNO IDEAL: personas de 25 a 60 anos que quieren mejorar su salud metabolica y adoptar habitos sostenibles, dispuestas a dedicar tiempo al proceso, que valoran el acompanamiento y la comunidad. No es para quien busca resultados sin compromiso ni para quien busca sustituir tratamiento medico profesional.\n\n" +
+"RECETARIO BASE (respaldo general si buscar_recetas no encuentra nada -- las recetas oficiales y concretas viven en buscar_recetas, no aqui):\n" +
+"Metodo de plato base: Proteina magra + Verdura sin limite + Grasa saludable (porcion) + Fermentado o probiotico opcional + Carbohidrato complejo segun fase. Proteinas: huevo, pollo, pescado, atun, pavo, tofu, lentejas, garbanzo, frijol. Verduras libres: espinaca, brocoli, calabaza, nopal, jitomate, pepino, ejotes, champinones, coliflor, lechuga. Grasas saludables: aguacate, aceite de oliva, nueces, almendras, chia, linaza. Fermentados: yogur natural sin azucar, kefir, chucrut. Carbohidratos complejos (fase 2 y 3): avena, camote, arroz integral, quinoa, tortilla de maiz nixtamalizado. Fruta de bajo indice glucemico: manzana verde, pera, fresas, arandanos, toronja. Evitar siempre: azucar anadida, refrescos, pan y cereales refinados, frituras, embutidos procesados, comida rapida.\n" +
+"Fase 1 (semanas 1-4), fruta solo 1 porcion al dia y no en ayunas: desayunos como omelette de huevo con espinaca y champinones mas aguacate, o yogur natural sin azucar con chia y nueces, o avena en agua con canela sin azucar. Comidas como pechuga a la plancha con ensalada grande y aceite de oliva, o pescado al vapor con nopales y calabacitas, o lentejas guisadas con ensalada de jitomate y pepino. Cenas ligeras como sopa de verduras con pollo deshebrado, yogur natural con semillas, o verduras salteadas con tofu o huevo. Snacks: puno de almendras, pepino o jicama, te sin azucar.\n" +
+"Fase 2 (semanas 5-8), fruta hasta 2 porciones al dia siempre con proteina o grasa: ejemplo de dia con ventana 12pm-8pm: primera comida con huevos revueltos, verduras, medio aguacate y fruta; post-entreno con proteina o yogur y avena; comida fuerte con proteina magra, carbohidrato complejo tipo camote o arroz integral y verdura libre; ultima comida antes de las 8pm con pescado o pollo, ensalada y un fermentado.\n" +
+"Fase 3 (semanas 9-12): mantener consistencia con el metodo de plato base, mas variedad de carbohidratos complejos, 2 a 3 porciones de fruta segun actividad, siempre sin azucar anadida ni comida chatarra.\n" +
+"Guia para comer fuera (version base del bono Restaurantes Sin Culpa): prioriza proteina a la plancha o asada con ensalada o verdura al vapor y aderezo aparte; evita frituras, salsas cremosas, pan de cortesia y refresco; en buffet llena el plato primero de verdura y proteina; en reuniones sociales, comer algo ligero antes para no llegar con hambre extrema, y permitirse flexibilidad puntual sin culpa, la constancia importa mas que la perfeccion de una comida.";
+
+  var STARTERS = [
+    "¿Qué me toca esta semana según mi fase?",
+    "¿Qué módulo debo revisar si perdí la motivación?",
+    "Dame ideas de comida para hoy",
+    "Se me antoja mucho el azúcar, ¿qué hago?"
+  ];
+
+  var STORAGE_KEY = "omnisalud_chat_v1";
+  var MAX_PROMPT_BYTES = 50000; // headroom under the 64KB cap, leaving room for the reply
+
+  var RECETAS = (window.RECETAS_RENACER || []);
+
+  function normalizar(s){
+    return String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  }
+
+  function buscarRecetas(input){
+    input = input || {};
+    var categoria = input.categoria ? normalizar(input.categoria) : null;
+    var faseNum = input.fase ? String(input.fase).replace(/\D/g, "") : null;
+    var texto = input.texto ? normalizar(input.texto) : null;
+
+    var resultados = RECETAS.filter(function(r){
+      if (categoria && r.cat !== categoria) return false;
+      if (faseNum && r.f.indexOf(faseNum) === -1) return false;
+      if (texto){
+        var enTitulo = normalizar(r.t).indexOf(texto) !== -1;
+        var enIngredientes = normalizar(r.i.join(" ")).indexOf(texto) !== -1;
+        if (!enTitulo && !enIngredientes) return false;
+      }
+      return true;
+    });
+
+    if (resultados.length === 0){
+      return { encontradas: 0, mensaje: "No se encontraron recetas con esos filtros en el Recetario Premium Renacer. Intenta con otro texto o quita algun filtro." };
+    }
+
+    return {
+      encontradas: resultados.length,
+      mostrando: Math.min(resultados.length, 6),
+      recetas: resultados.slice(0, 6).map(function(r){
+        return { titulo: r.t, categoria: r.cat, fase: r.f, ingredientes: r.i, preparacion: r.p, tip: r.c };
+      })
+    };
+  }
+
+  var RECETAS_TOOL = {
+    name: "buscar_recetas",
+    description: "Busca en las 180 recetas oficiales del Recetario Premium Renacer (desayunos, comidas, cenas, snacks, bebidas). Filtra por categoria, fase (1, 2 o 3) y/o texto libre en el titulo o ingredientes. Devuelve hasta 6 recetas con titulo, categoria, fase, ingredientes, pasos de preparacion y tip. Usala siempre que el alumno pida una receta o idea de comida concreta -- nunca inventes una receta que no venga de aqui.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        categoria: { type: "string", enum: ["desayunos", "comidas", "cenas", "snacks", "bebidas"], description: "Categoria de comida" },
+        fase: { type: "string", enum: ["1", "2", "3"], description: "Fase del protocolo de 90 dias" },
+        texto: { type: "string", description: "Palabra clave para buscar en el titulo o ingredientes, ej. pollo, avena, sin fruta" }
+      }
+    },
+    execute: function(input){ return buscarRecetas(input); }
+  };
+
+  var els = {
+    thread: document.getElementById("thread"),
+    empty: document.getElementById("emptyState"),
+    chips: document.getElementById("starterChips"),
+    composer: document.getElementById("composer"),
+    hint: document.getElementById("hint"),
+    input: document.getElementById("input"),
+    sendBtn: document.getElementById("sendBtn")
+  };
+
+  var turns = [];       // {role:"user"|"assistant", content}
+  var sampleFn = null;
+  var sending = false;
+  var controller = null;
+
+  function byteLength(str){ return new Blob([str]).size; }
+
+  function loadHistory(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw){
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) turns = parsed;
+      }
+    } catch(e){ /* private mode or blocked storage: start fresh */ }
+  }
+
+  function saveHistory(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(turns.slice(-40))); }
+    catch(e){ /* ignore */ }
+  }
+
+  function renderStarters(){
+    els.chips.innerHTML = "";
+    STARTERS.forEach(function(text){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = text;
+      b.addEventListener("click", function(){ send(text); });
+      els.chips.appendChild(b);
+    });
+  }
+
+  function addRow(role, text){
+    var row = document.createElement("div");
+    row.className = "row " + role;
+    var bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    els.thread.appendChild(row);
+    els.thread.scrollTop = els.thread.scrollHeight;
+    return bubble;
+  }
+
+  function renderAll(){
+    els.thread.innerHTML = "";
+    if (turns.length === 0){
+      els.thread.appendChild(els.empty);
+      return;
+    }
+    turns.forEach(function(t){ addRow(t.role === "user" ? "user" : "bot", t.content); });
+  }
+
+  function autosize(){
+    els.input.style.height = "auto";
+    els.input.style.height = Math.min(els.input.scrollHeight, 120) + "px";
+  }
+
+  function trimmedForCall(){
+    var copy = turns.slice();
+    while (copy.length > 2 && byteLength(RULES) + byteLength(JSON.stringify(copy)) > MAX_PROMPT_BYTES){
+      copy.splice(0, 2); // drop oldest user/assistant pair, keep RULES intact
+    }
+    return copy;
+  }
+
+  function friendlyError(code){
+    switch(code){
+      case "not_granted": return "No diste permiso para usar el Consultor IA en esta sesión. Recarga la página si quieres intentarlo de nuevo.";
+      case "sampling_disabled": return "El Consultor IA no está disponible para esta cuenta en este momento.";
+      case "rate_limited": return "Muchas preguntas seguidas. Espera un momento y vuelve a intentar.";
+      case "session_expired": return "Tu sesión expiró. Inicia sesión de nuevo para seguir chateando.";
+      case "prompt_too_large": return "La conversación se volvió muy larga. Recarga la página para empezar una nueva.";
+      case "cancelled": return null;
+      default: return "Algo falló al responder. Intenta de nuevo en un momento.";
+    }
+  }
+
+  function setSending(state){
+    sending = state;
+    els.sendBtn.disabled = state;
+    els.input.disabled = state;
+  }
+
+  function send(overrideText){
+    if (sending) return;
+    var text = (overrideText != null ? overrideText : els.input.value).trim();
+    if (!text) return;
+    if (!sampleFn){
+      addRow("system", "El Consultor IA solo funciona dentro de un visor de Claude (claude.ai o la app de Claude). Abre esta página ahí para chatear.");
+      return;
+    }
+
+    if (turns.length === 0){ els.empty.remove(); }
+    turns.push({ role: "user", content: text });
+    addRow("user", text);
+    saveHistory();
+
+    els.input.value = "";
+    autosize();
+    setSending(true);
+
+    var thinkingBubble = addRow("bot", "");
+    thinkingBubble.innerHTML = '<span class="thinking"><span></span><span></span><span></span></span>';
+
+    var messages = [{ role: "user", content: RULES }].concat(trimmedForCall());
+    controller = new AbortController();
+
+    function runSample(withTools){
+      return sampleFn(messages, {
+        signal: controller.signal,
+        modelTier: "default",
+        cache: false,
+        tools: withTools ? [RECETAS_TOOL] : undefined,
+        onText: function(update){ thinkingBubble.textContent = update.text; els.thread.scrollTop = els.thread.scrollHeight; }
+      });
+    }
+
+    var useTools = RECETAS.length > 0;
+    var promise = runSample(useTools);
+    if (useTools){
+      promise = promise.catch(function(err){
+        if (err && err.code === "tools_unavailable") return runSample(false);
+        throw err;
+      });
+    }
+
+    promise.then(function(result){
+      thinkingBubble.textContent = result.text;
+      turns.push({ role: "assistant", content: result.text });
+      saveHistory();
+    }).catch(function(err){
+      var msg = friendlyError(err && err.code);
+      if (err && err.text){
+        thinkingBubble.textContent = err.text;
+        turns.push({ role: "assistant", content: err.text });
+        saveHistory();
+      } else if (thinkingBubble.parentNode) {
+        thinkingBubble.parentNode.remove();
+      }
+      if (msg) addRow("system", msg);
+    }).finally(function(){
+      setSending(false);
+      controller = null;
+      els.thread.scrollTop = els.thread.scrollHeight;
+    });
+  }
+
+  els.sendBtn.addEventListener("click", function(){ send(); });
+  els.input.addEventListener("input", autosize);
+  els.input.addEventListener("keydown", function(e){
+    if (e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      send();
+    }
+  });
+
+  async function init(){
+    renderStarters();
+    loadHistory();
+    renderAll();
+    els.composer.hidden = false;
+    els.hint.hidden = false;
+
+    if (!window.claude || typeof window.claude.use !== "function"){
+      addRow("system", "Esta página necesita abrirse dentro de Claude (claude.ai o la app de Claude) para poder responder.");
+      return;
+    }
+    try{
+      sampleFn = await window.claude.use("sample");
+    } catch(e){ sampleFn = null; }
+    if (!sampleFn){
+      addRow("system", "Esta vista no tiene permiso para usar el Consultor IA. Ábrela desde claude.ai o la app de Claude.");
+    }
+  }
+
+  init();
+})();
+</script>
